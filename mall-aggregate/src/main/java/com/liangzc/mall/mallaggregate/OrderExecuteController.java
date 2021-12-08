@@ -40,7 +40,7 @@ public class OrderExecuteController {
         return responseEntity.getBody();
     }
 
-
+    //api方式
     @GetMapping("/executeOrderByRibbon")
     public String orderexecuteByRibbon(){
 
@@ -58,6 +58,28 @@ public class OrderExecuteController {
         multiValueMap.add("goods", goodsInfo);
         multiValueMap.add("marketings", marketingInfo);
         ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:9092/orders", multiValueMap, String.class);
+        return responseEntity.getBody();
+    }
+
+    //注解方式
+    @GetMapping("/executeOrderByRibbonAnnotation")
+    public String orderexecuteByRibbonAnnotation(){
+
+        String goodsUrl = "http://goods-service-annotation/goods";
+        log.info("url={}",goodsUrl);
+        //获取商品信息
+        String goodsInfo = restTemplate.getForObject(goodsUrl, String.class);
+        log.info("获取商品信息：{}",goodsInfo);
+        //获取营销信息
+        String marketingUrl = "http://marketing-service-annotation/marketing";
+        String marketingInfo = restTemplate.getForObject(marketingUrl, String.class);
+        log.info("获取营销信息：{}",goodsInfo);
+        //获取订单信息
+        MultiValueMap<String, Object> multiValueMap = new LinkedMultiValueMap<>();
+        multiValueMap.add("goods", goodsInfo);
+        multiValueMap.add("marketings", marketingInfo);
+        String orderUrl = "http://order-service-annotation/orders";
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(orderUrl, multiValueMap, String.class);
         return responseEntity.getBody();
     }
 }
